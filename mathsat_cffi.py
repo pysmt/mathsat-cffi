@@ -34,9 +34,8 @@ def init_lib():
 def demo():
     """Runs a simple demo to test the bindings."""
     # Get the Version of Mathsat
-    v_cdata = mathsat.msat_get_version()
-    # Convert to string and print
-    print(ffi.string(v_cdata))
+    v = mathsat.msat_get_version()
+    print(v)
     # Create a Solver instance
     cfg_ = mathsat.msat_create_config()
     env_ = mathsat.msat_create_env(cfg_)
@@ -78,6 +77,10 @@ class MathSATWrapper(object):
             return super(MathSATWrapper).getattr(self, name)
         except AttributeError:
             return getattr(self.lib, name)
+
+    def msat_get_version(self):
+        v = self.lib.msat_get_version()
+        return ffi.string(v)
 
     def MSAT_ERROR_DECL(self, decl):
         return decl.repr == None
