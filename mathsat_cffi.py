@@ -238,6 +238,23 @@ class MathSATWrapper(object):
             name = name.encode('ascii')
         return self.lib.msat_declare_function(env, name, type_)
 
+    def msat_get_interpolant(self, env, groups_of_a):
+        goa = ffi.new("int[%d]" % len(groups_of_a))
+        for i, g in enumerate(groups_of_a):
+            goa[i] = g
+        return self.lib.msat_get_interpolant(env, goa, len(groups_of_a))
+
+    def msat_exist_elim(self, env, formula, to_elim, algo,
+                        toplevel_propagation=True,
+                        boolean_simplifications=True,
+                        remove_redundant_constraints=True):
+        opts = ffi.new("msat_exist_elim_options *")[0]
+        opts.toplevel_propagation = toplevel_propagation
+        opts.boolean_simplifications = boolean_simplifications
+        opts.remove_redundant_constraints = remove_redundant_constraints
+        return self.lib.msat_exist_elim(env, formula, to_elim, len(to_elim),
+                                        algo, opts)
+
 # EOC MathSATWrapper
 
 #
@@ -420,6 +437,9 @@ int msat_term_is_int_to_bv(msat_env e, msat_term t);
 int msat_term_is_int_from_ubv(msat_env e, msat_term t);
 int msat_term_is_int_from_sbv(msat_env e, msat_term t);
 char *msat_term_repr(msat_term t);
+
+size_t msat_decl_id(msat_decl d);
+msat_decl msat_term_get_decl(msat_term t);
 
 /* Solver interaction */
 int msat_push_backtrack_point(msat_env e);
